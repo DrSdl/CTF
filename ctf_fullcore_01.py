@@ -415,9 +415,9 @@ for ch in S_list:
     addaGap = r_f - N_r*r_p
     x=ch.getNumberOfNeighborFuel()
     if x==2:
-        condi=2
+        condi=2 # edge location
     else:
-        condi=4
+        condi=4 # corner location
     if condi==2:
         xA=r_p * (r_p + addaGap) - np.pi * r_r * r_r
     # check if there is a gap between fuel assemblies in x AND y direction, i.e. corner channel
@@ -465,7 +465,9 @@ print('rod neighbor types: ', s5.getRodTypeNeighbors() ,' rod neighbor IDs: ', s
 
 # -----------------------------------------------------------------------------------------------------------
 
-
+print('*******************************************************************************')
+print('* CARD GROUP 2 - Channel Description                                          *')
+print('*******************************************************************************')
 # -----------------------------------------------------------------------------------------------------------
 # print out card 2.1
 print('* Card 2.1')
@@ -527,7 +529,9 @@ unif=set(unif)
 #y=np.extract(x!=0,x)
 Gap_total +=len(unif)
 
-
+print('*******************************************************************************')
+print('* CARD GROUP 3 - Transverse Channel Connection (Gap) Data                     *')
+print('*******************************************************************************')
 # -----------------------------------------------------------------------------------------------------------
 # print out card 3.1
 print('* Card 3.1')
@@ -568,13 +572,280 @@ for ch in S_list:
                 # check if edge or corner location
                 gapDist=r_p
                 gt=ch.getFANumberNeighbors()
-                if idx==0 and gt[0]!=gt[1] and gt[2]!=gt[3]:
-                    gapDist = r_p - r_r - r_g + r_f - N_r*r_p
-                if idx==1 and gt[0]!=gt[2] and gt[1]!=gt[3]:
-                    gapDist = r_p - r_r - r_g + r_f - N_r*r_p
+                # vertical gap -----------------------------------------------
+                if idx==0 and gt[0]!=gt[1] and gt[2]!=gt[3] and gt[0]==gt[2]:
+                    gapDist = r_p + r_f - N_r*r_p
+                # horizontal gap ---------------------------------------------
+                if idx==1 and gt[0]!=gt[2] and gt[1]!=gt[3] and gt[0]==gt[1]:
+                    gapDist = r_p + r_f - N_r*r_p
+                # corner gap -------------------------------------------------
                 if idx==2 and gt[0]!=gt[1] and gt[1]!=gt[3] and gt[2]!=gt[3]:
-                    gapDist = r_p - r_r - r_g + r_f - N_r*r_p
+                    gapDist = r_p + r_f - N_r*r_p
                 x=x + '  {:10.8f}'.format(gapDist*0.01)
+                WKR=0.5
+                FWALL=0.0
+                IGAPA=0
+                FACTOR=1.0
+                x = x + '  {:10.8f}'.format(WKR) + '  {:5.2f}'.format(FWALL) + '  {:3n}'.format(IGAPA)
+                x = x + '  {:3n}'.format(IGAPA) + '  {:3n}'.format(FACTOR)
+                x = x + ' 0  0  0  0  0  0 '
                 print(x)
+                x = '      1   0.0'
+                print(x)
+                sum += 1
 
 
+# -----------------------------------------------------------------------------------------------------------
+# print out card 3.3.5
+print('* Card 3.3.5')
+print('*    K       X          Y      NORM')
+sum=1
+for ch in S_list:
+    x=ch.getChannelNeighbors()
+    myC=ch.getChannelNumber()
+    nrX=ch.getChannelX()
+    nrY=ch.getChannelY()
+    for idx,lc in enumerate(x):
+        if lc!=0:
+            if myC<lc:
+                # here additonal gaps (due to corners, edges) are neglected
+                x = '  {:5n}'.format(sum) + '  {:10.8f}'.format((nrX*r_p+0.5*r_p)*0.01)
+                x = x + '  {:10.8f}'.format((nrY*r_p+0.5*r_p)*0.01)
+                if idx==0 or idx==2:
+                    x = x + ' x'
+                else:
+                    x = x + ' y'
+                print(x)
+                sum += 1
+
+print('*******************************************************************************')
+print('* CARD GROUP 4 - Vertical Channel Connection Data                             *')
+print('*******************************************************************************')
+# -----------------------------------------------------------------------------------------------------------
+# print out card 4.2
+print('* Card 4.2')
+print('* ISEC   NCHN  NONO     DXS     IVAR')
+x = '     1   ' + '{:7n}'.format(S_total)
+x = x +'  35    0.126124   12'
+print(x)
+# -----------------------------------------------------------------------------------------------------------
+# print out card 4.3
+print('* Card 4.3')
+print('* JLEV     VARDX   JLEV     VARDX   JLEV     VARDX   JLEV     VARDX   JLEV     VARDX')
+print('    2    0.4874805   3    0.0609351   4    0.1219177  13    0.1218701  14    0.1219177')
+print('   22    0.1218701  23    0.1219177  32    0.1218701  33    0.1219177  34    0.1218701')
+print('   35    0.0609351  36    0.3656104 ')
+# -----------------------------------------------------------------------------------------------------------
+# print out card 4.4
+print('* Card 4.4')
+print('*     I   KCHA  KCHA  KCHA  KCHA  KCHA  KCHA   KCHB  KCHB  KCHB  KCHB  KCHB  KCHB')
+for ch in S_list:
+    myC=ch.getChannelNumber()
+    x = '  {:5n}'.format(myC)+'  {:5n}'.format(myC)+'  0     0     0     0     0'
+    x = x + '  {:5n}'.format(myC)+'  0     0     0     0     0'
+    print(x)
+# -----------------------------------------------------------------------------------------------------------
+# print out card 4.5
+print('* Card 4.5')
+print('* IWDE')
+x = '  {:5n}'.format(S_total)
+print(x)
+# -----------------------------------------------------------------------------------------------------------
+# print out card 4.6
+print('* Card 4.6')
+print('* MSIM  35*S_total')
+x = '  {:7n}'.format(35*S_total)
+print(x)
+
+# -----------------------------------------------------------------------------------------------------------
+# print out card 7
+# it is assumed that we have 11 grids: 7 grids in the active zone, 2 in the plenum zones and
+# 2 pseudo-grids to model fuel assembly bottom and top nozzle
+print('*******************************************************************************')
+print('* CARD GROUP 7 - Grid Loss Coefficient Data                                   *')
+print('*******************************************************************************')
+print('* Card 7.1  S_total/12 * 11 = xxx lines')
+print('*    NCD    NGT  IFGQF  IFSDRP  IFESPV  IFTPE  IGTEMP  NFBS  NDUM9-14')
+cas = S_total/12
+if int(cas)*12<S_total:
+    cas=int(cas)+1
+else:
+    cas=int(cas)
+
+# but we want to apply the pressure loss coefficients only for the subchannels inside
+# of a fuel assembly, not at gaps and corners
+# therefore we now create an array containing only all the relevant subchannels
+unif=[]
+sum=1
+for ch in S_list:
+    myC=ch.getChannelNumber()
+    x = ch.getNumberOfNeighborFuel()
+    if x==1:
+        unif.append(myC)
+
+ns=len(unif)
+# print('*** ', ns)
+cas = ns/12
+if int(cas)*12<ns:
+    cas=int(cas)+1
+else:
+    cas=int(cas)
+
+
+x = '  {:7n}'.format(cas*11)
+x = x + '   0      0       0       0      0       0     0  0 0 0 0 0 0'
+print(x)
+print('* Card 7.2')
+print('** CDL   J  Subchannels, enter up to 12')
+print('** CDL calculated from NESTOR MVG obtained Re-dependent k correlation.')
+print('** Assuming Re=500,000')
+
+grids=['* Grid 1', '* Grid 2', '* Grid 3', '* Grid 4', '* Grid 5', '* Grid 6', '* Grid 7', '* Grid 8', '* Grid 9', '* Grid 10', '* Grid 11']
+cdli=['1.6100', '0.6200', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '0.8600', '2.6290']
+cdlj=['1',      '2',      '4',      '8',      '13',     '17',     '22',     '26',     '30',     '34',     '35']
+
+for idx,gr in enumerate(grids):
+    print(gr)
+    x = cdli[idx] + '  ' + cdlj[idx]
+    sum=1
+    y=''
+    for i in range(len(unif)):
+        y = y + '  {:4n}'.format(unif[i])
+        if i==len(unif)-1 and sum!=12:
+            for j in range(12-sum):
+                y = y + '  {:4n}'.format(0)
+                sum += 1
+        if sum==12:
+            print(x+y)
+            y=''
+            sum=1
+        else:
+            sum +=1
+
+# -----------------------------------------------------------------------------------------------------------
+# print out card 8
+print('*******************************************************************************')
+print('* CARD GROUP 8 - Rod and Unheated Conductor Data                              *')
+print('*******************************************************************************')
+
+print('* Card 8.1')
+print('*  NRRD    NSRD   NC NRTB NRAD NLTY NSTA  NXF NCAN RADF   W3 NM12 NM13 NM14')
+x = '  {:7n}'.format(N_total)
+x = x + '     0    1    1    0    0    1    1    0    0    0    0    0    0'
+print(x)
+print('* Card 8.2')
+print('*    N    IFTY     IAXP NRND      DAXMIN   RMULT    HGAP ISECR   HTAMB    TAMB')
+print('* Card 8.3')
+print('* NSCH  PIE  NSCH  PIE  NSCH  PIE  NSCH  PIE  NSCH   PIE  NSCH   PIE  NSCH   PIE  NSCH   PIE')
+#
+# we assume two geometry type here: one for standard fuel rod (1), the other for guide tube (2)
+#
+rX, rY = rodK.shape
+for j in range(rY):
+    for i in range(rX):
+        rodNum=rodK[j,i]
+        x = '  {:7n}'.format(rodNum)
+        rodTyp = rodH[j, i]
+        # add rod geometry type
+        if rodTyp==1:
+            x = x + '  {:2n}'.format(1)
+        if rodTyp==0:
+            x = x + '  {:2n}'.format(2)
+        # add power profile id
+        x = x + '  {:7n}'.format(rodNum)
+        x = x + '  0       0.00000   1.000   5678.3     1   0.000   0.000'
+        print(x)
+        # find all subchannels connected to this rod
+        unil=[]
+        for ch in S_list:
+            myC = ch.getChannelNumber()
+            lyL = ch.getRodNeighbors()
+            if rodNum in lyL:
+                unil.append(myC)
+        x=''
+        for k in range(len(unil)):
+            x = x + '  {:7n}'.format(unil[k])+ ' 0.25 '
+        for k in range(8 - len(unil)):
+            x = x + '  {:2n}'.format(0) + ' 0.00 '
+        print(x)
+
+# -----------------------------------------------------------------------------------------------------------
+# print out card 8.6
+print('* Card 8.6')
+print('*   I          NRT1 NST1 NRX1')
+x = '    1    '
+x = x + '  {:7n}'.format(N_total)
+x = x + ' 0    2'
+print(x)
+# all rods use the same initialisation table
+print('* Card 8.7')
+print('*  IRTB')
+x = ''
+sum=1
+rX, rY = rodK.shape
+for j in range(rY):
+    for i in range(rX):
+        rodNum=rodK[j,i]
+        x = x + '  {:7n}'.format(rodNum)
+        if sum==12:
+            print(x)
+            x=''
+            sum=1
+        else:
+            sum = sum + 1
+        if j==rX-1 and i==rX-1 and sum!=12:
+            print(x)
+
+# -----------------------------------------------------------------------------------------------------------
+# print out card 8.9
+# simple temperature table
+print('* Card 8.9')
+print('*     AXIALT      TRINIT')
+print('      0.0000      292.78')
+print('      4.7500      292.78')
+
+
+# -----------------------------------------------------------------------------------------------------------
+# print out card 11
+#
+print('*******************************************************************************')
+print('* CARD GROUP 11 - Axial Power Tables and Forcing Functions                    *')
+print('*******************************************************************************')
+
+print('* Card 11.1')
+print('* NQA      NAXP MNXN  NQ  NGPF NQR  NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14')
+x = '    1 '
+x = x + '  {:7n}'.format(N_total)
+x = x + ' 36    0    0    1    0    0    0    0    0    0    0    0'
+print(x)
+print('*')
+print('* Axial Power Forcing Functions')
+
+print('* Card 11.2 + 11.3 *****************')
+print('*     YQA')
+print('      0.0')
+print('*  I NAXN')
+#
+# for the time being we use a flat power profile for all rods
+#
+power=[0.0   ,  0.0  , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 0.0   , 0.0    ]
+pnode=[0.0000, 0.4872, 0.5481, 0.6699, 0.7917, 0.9135, 1.0353, 1.1571, 1.2788, 1.4006, 1.5224, 1.6442, 1.7660, 1.8878, 2.0096, 2.1314, 2.2532, 2.3750, 2.4968, 2.6186, 2.7404, 2.8622, 2.9840, 3.1058, 3.2276, 3.3494, 3.4712, 3.5929, 3.7147, 3.8365, 3.9583, 4.0801, 4.2019, 4.3237, 4.3846, 4.7540 ]
+
+rX, rY = rodK.shape
+for j in range(rY):
+    for i in range(rX):
+        rodNum=rodK[j,i]
+        x = '* Card 11.3 : rod {:7n}'.format(rodNum)
+        print(x)
+        x = '*  I NAXN'
+        print(x)
+        x = '    {:7n} 36'.format(rodNum)
+        print(x)
+        x = '* Card 11.4 : rod {:7n}'.format(rodNum)
+        print(x)
+        x = '*   Y     AXIAL'
+        print(x)
+        for idx, height in enumerate(pnode):
+            x = '  {:5.4f}'.format(height)
+            x = x + '  {:5.4f}'.format(power[idx])
+            print(x)

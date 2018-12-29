@@ -162,6 +162,10 @@ class SubChannel:
         return len(x)
 
 
+# define template file
+filein  = 'KXX_SIM5_1-1-1_template'
+# define destination file
+fileout = 'p.ps'
 # define fuel assembly NxN matrix
 N_x=3
 # define number of fuel rods nxn per fuel assembly
@@ -464,27 +468,46 @@ s5=S_list[(N_r*N_x-1)*1+2-1]
 print('rod neighbor types: ', s5.getRodTypeNeighbors() ,' rod neighbor IDs: ', s5.getRodNeighbors() ,' rod neighbor FA name: ', s5.getFANumberNeighbors() ,' subchannel neighbor IDs: ', s5.getChannelNeighbors(), ' number of fuel rod types: ', s5.getNumberOfRodTypes(), ' number of FA names: ', s5.getNumberOfNeighborFuel())
 
 # -----------------------------------------------------------------------------------------------------------
+card_group02 = ''
+card_group03 = ''
+card_group04 = ''
+card_group07 = ''
+card_group08 = ''
+card_group11 = ''
+card_group13 = ''
+debugg = 0
+# python literals: https://docs.python.org/2.0/ref/strings.html
+# https://docs.python.org/2/library/stringio.html
+# https://docs.python.org/3/library/io.html
+# https://pandas.pydata.org/pandas-docs/stable/text.html
+# http://ogrisel.github.io/scikit-learn.org/sklearn-tutorial/tutorial/text_analytics/working_with_text_data.html
+
 
 print('*******************************************************************************')
 print('* CARD GROUP 2 - Channel Description                                          *')
 print('*******************************************************************************')
 # -----------------------------------------------------------------------------------------------------------
 # print out card 2.1
-print('* Card 2.1')
-print('* NCHA NDM2 NDM3 NDM4 NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14')
+if debugg==1: print('* Card 2.1');
+card_group02 = card_group02 + '* Card 2.1' + '\n'
+if debugg==1: print('* NCHA NDM2 NDM3 NDM4 NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14');
+card_group02 = card_group02 + '* NCHA NDM2 NDM3 NDM4 NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14' + '\n'
 x = '{:5n}'.format(S_total)
 x = x + '  0    0    0    0    0    0    0    0    0    0    0    0    0 '
-print(x)
+if debugg==1: print(x);
+card_group02 = card_group02 + x +'\n'
+
 # -----------------------------------------------------------------------------------------------------------
 # print out card 2.2
 # python format strings
 # https://docs.python.org/3/library/string.html#formatstrings
-print('* Card 2.2')
-print('*      I       AREA        PWET ABOT ATOP NMGP    X         Y         XSIZ       YSIZ')
+if debugg==1: print('* Card 2.2');
+card_group02 = card_group02 + '* Card 2.2' + '\n'
+if debugg==1: print('*      I       AREA        PWET ABOT ATOP NMGP    X         Y         XSIZ       YSIZ');
+card_group02 = card_group02 + '*      I       AREA        PWET ABOT ATOP NMGP    X         Y         XSIZ       YSIZ' + '\n'
 for ch in S_list:
-    print(ch.printCTFchannel())
-    pass
-
+    if debugg == 1: print(ch.printCTFchannel());
+    card_group02 = card_group02 + ch.printCTFchannel() + '\n'
 
 # -----------------------------------------------------------------------------------------------------------
 # calculate total number of gaps
@@ -529,22 +552,38 @@ unif=set(unif)
 #y=np.extract(x!=0,x)
 Gap_total +=len(unif)
 
+
+# https://stackoverflow.com/questions/17140886/how-to-search-and-replace-text-in-a-file-using-python
+fl = open(filein,'r')
+filedata = fl.read()
+fl.close()
+
+fileupdate = filedata.replace('CARD_GROUP_02',card_group02)
+#card_group02 = card_group02 + '' + '\n'
+
 print('*******************************************************************************')
 print('* CARD GROUP 3 - Transverse Channel Connection (Gap) Data                     *')
 print('*******************************************************************************')
 # -----------------------------------------------------------------------------------------------------------
 # print out card 3.1
-print('* Card 3.1')
-print('*    NK NDM2 NDM3 NDM4 NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14')
+if debugg==1: print('* Card 3.1');
+card_group03 = card_group03 + '* Card 3.1' + '\n'
+if debugg==1: print('*    NK NDM2 NDM3 NDM4 NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14');
+card_group03 = card_group03 + '*    NK NDM2 NDM3 NDM4 NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14' + '\n'
 x = '  {:5n}'.format(Gap_total)
 x = x + '  0    0    0    0    0    0    0    0    0    0    0    0    0 '
-print(x)
+if debugg==1: print(x);
+card_group03 = card_group03 + x + '\n'
 # -----------------------------------------------------------------------------------------------------------
 # print out card 3.2 and 3.3
-print('* Card 3.2')
-print('*     K     IK    JK   GAPN     LNGTH    WKR  FWL IGB IGA FACT IG JG IG JG IG JG')
-print('* Card 3.3')
-print('*     GMLT  ETNR')
+if debugg==1: print('* Card 3.2');
+card_group03 = card_group03 + '* Card 3.2' + '\n'
+if debugg==1: print('*     K     IK    JK   GAPN        LNGTH       WKR          FWL     IGB IGA FACT IG JG IG JG IG JG');
+card_group03 = card_group03 + '*     K     IK    JK   GAPN        LNGTH       WKR          FWL     IGB IGA FACT IG JG IG JG IG JG' + '\n'
+if debugg==1: print('* Card 3.3');
+card_group03 = card_group03 + '* Card 3.3' + '\n'
+if debugg==1: print('*     GMLT  ETNR');
+card_group03 = card_group03 + '*     GMLT  ETNR' + '\n'
 
 unif=[]
 sum=1
@@ -589,16 +628,21 @@ for ch in S_list:
                 x = x + '  {:10.8f}'.format(WKR) + '  {:5.2f}'.format(FWALL) + '  {:3n}'.format(IGAPA)
                 x = x + '  {:3n}'.format(IGAPA) + '  {:3n}'.format(FACTOR)
                 x = x + ' 0  0  0  0  0  0 '
-                print(x)
+                if debugg == 1: print(x);
+                card_group03 = card_group03 + x + '\n'
                 x = '      1   0.0'
-                print(x)
+                if debugg == 1: print(x);
+                card_group03 = card_group03 + x + '\n'
                 sum += 1
 
 
 # -----------------------------------------------------------------------------------------------------------
 # print out card 3.3.5
-print('* Card 3.3.5')
-print('*    K       X          Y      NORM')
+if debugg==1: print('* Card 3.3.5');
+card_group03 = card_group03 + '* Card 3.3.5' + '\n'
+if debugg==1: print('*    K       X          Y      NORM');
+card_group03 = card_group03 + '*    K       X          Y      NORM' + '\n'
+
 sum=1
 for ch in S_list:
     x=ch.getChannelNeighbors()
@@ -615,48 +659,71 @@ for ch in S_list:
                     x = x + ' x'
                 else:
                     x = x + ' y'
-                print(x)
+                    if debugg == 1: print(x);
+                card_group03 = card_group03 + x + '\n'
                 sum += 1
 
+fileupdate = fileupdate.replace('CARD_GROUP_03',card_group03)
+
+# -----------------------------------------------------------------------------------------------------------
+''
 print('*******************************************************************************')
 print('* CARD GROUP 4 - Vertical Channel Connection Data                             *')
 print('*******************************************************************************')
 # -----------------------------------------------------------------------------------------------------------
 # print out card 4.2
-print('* Card 4.2')
-print('* ISEC   NCHN  NONO     DXS     IVAR')
+if debugg==1: print('* Card 4.2');
+card_group04 = card_group04 + '* Card 4.2' + '\n'
+if debugg==1: print('* ISEC   NCHN  NONO     DXS     IVAR');
+card_group04 = card_group04 + '* ISEC   NCHN  NONO     DXS     IVAR' + '\n'
 x = '     1   ' + '{:7n}'.format(S_total)
 x = x +'  35    0.126124   12'
-print(x)
+if debugg==1: print(x);
+card_group04 = card_group04 + x + '\n'
 # -----------------------------------------------------------------------------------------------------------
 # print out card 4.3
-print('* Card 4.3')
-print('* JLEV     VARDX   JLEV     VARDX   JLEV     VARDX   JLEV     VARDX   JLEV     VARDX')
-print('    2    0.4874805   3    0.0609351   4    0.1219177  13    0.1218701  14    0.1219177')
-print('   22    0.1218701  23    0.1219177  32    0.1218701  33    0.1219177  34    0.1218701')
-print('   35    0.0609351  36    0.3656104 ')
+if debugg==1: print('* Card 4.3');
+card_group04 = card_group04 + '* Card 4.3' + '\n'
+if debugg==1: print('* JLEV     VARDX   JLEV     VARDX   JLEV     VARDX   JLEV     VARDX   JLEV     VARDX');
+card_group04 = card_group04 + '* JLEV     VARDX   JLEV     VARDX   JLEV     VARDX   JLEV     VARDX   JLEV     VARDX' + '\n'
+if debugg==1: print('    2    0.4874805   3    0.0609351   4    0.1219177  13    0.1218701  14    0.1219177');
+card_group04 = card_group04 + '    2    0.4874805   3    0.0609351   4    0.1219177  13    0.1218701  14    0.1219177' + '\n'
+if debugg==1: print('   22    0.1218701  23    0.1219177  32    0.1218701  33    0.1219177  34    0.1218701');
+card_group04 = card_group04 + '   22    0.1218701  23    0.1219177  32    0.1218701  33    0.1219177  34    0.1218701' + '\n'
+if debugg==1: print('   35    0.0609351  36    0.3656104 ');
+card_group04 = card_group04 + '   35    0.0609351  36    0.3656104 ' + '\n'
 # -----------------------------------------------------------------------------------------------------------
 # print out card 4.4
-print('* Card 4.4')
-print('*     I   KCHA  KCHA  KCHA  KCHA  KCHA  KCHA   KCHB  KCHB  KCHB  KCHB  KCHB  KCHB')
+if debugg==1: print('* Card 4.4');
+card_group04 = card_group04 + '* Card 4.4' + '\n'
+if debugg==1: print('*     I   KCHA  KCHA  KCHA  KCHA  KCHA  KCHA   KCHB  KCHB  KCHB  KCHB  KCHB  KCHB');
+card_group04 = card_group04 + '*     I   KCHA  KCHA  KCHA  KCHA  KCHA  KCHA   KCHB  KCHB  KCHB  KCHB  KCHB  KCHB' + '\n'
 for ch in S_list:
     myC=ch.getChannelNumber()
     x = '  {:5n}'.format(myC)+'  {:5n}'.format(myC)+'  0     0     0     0     0'
     x = x + '  {:5n}'.format(myC)+'  0     0     0     0     0'
-    print(x)
+    if debugg == 1: print(x);
+    card_group04 = card_group04 + x + '\n'
 # -----------------------------------------------------------------------------------------------------------
 # print out card 4.5
-print('* Card 4.5')
-print('* IWDE')
+if debugg==1: print('* Card 4.5');
+card_group04 = card_group04 + '* Card 4.5' + '\n'
+if debugg==1: print('* IWDE');
+card_group04 = card_group04 + '* IWDE' + '\n'
 x = '  {:5n}'.format(S_total)
-print(x)
+if debugg==1: print(x);
+card_group04 = card_group04 + x + '\n'
 # -----------------------------------------------------------------------------------------------------------
 # print out card 4.6
-print('* Card 4.6')
-print('* MSIM  35*S_total')
-x = '  {:7n}'.format(35*S_total)
-print(x)
+if debugg==1: print('* Card 4.6');
+card_group04 = card_group04 + '* Card 4.6' + '\n'
+if debugg==1: print('* MSIM  35*S_total');
+card_group04 = card_group04 + '* MSIM  35*S_total' + '\n'
+x = '  {:7n}'.format(35*S_total);
+if debugg==1: print(x);
+card_group04 = card_group04 + x + '\n'
 
+fileupdate = fileupdate.replace('CARD_GROUP_04',card_group04)
 # -----------------------------------------------------------------------------------------------------------
 # print out card 7
 # it is assumed that we have 11 grids: 7 grids in the active zone, 2 in the plenum zones and
@@ -664,8 +731,11 @@ print(x)
 print('*******************************************************************************')
 print('* CARD GROUP 7 - Grid Loss Coefficient Data                                   *')
 print('*******************************************************************************')
-print('* Card 7.1  S_total/12 * 11 = xxx lines')
-print('*    NCD    NGT  IFGQF  IFSDRP  IFESPV  IFTPE  IGTEMP  NFBS  NDUM9-14')
+if debugg==1: print('* Card 7.1  S_total/12 * 11 = xxx lines');
+card_group07 = card_group07 + '* Card 7.1  S_total/12 * 11 = xxx lines' + '\n'
+if debugg==1: print('*    NCD    NGT  IFGQF  IFSDRP  IFESPV  IFTPE  IGTEMP  NFBS  NDUM9-14');
+card_group07 = card_group07 + '*    NCD    NGT  IFGQF  IFSDRP  IFESPV  IFTPE  IGTEMP  NFBS  NDUM9-14' + '\n'
+
 cas = S_total/12
 if int(cas)*12<S_total:
     cas=int(cas)+1
@@ -694,18 +764,25 @@ else:
 
 x = '  {:7n}'.format(cas*11)
 x = x + '   0      0       0       0      0       0     0  0 0 0 0 0 0'
-print(x)
-print('* Card 7.2')
-print('** CDL   J  Subchannels, enter up to 12')
-print('** CDL calculated from NESTOR MVG obtained Re-dependent k correlation.')
-print('** Assuming Re=500,000')
+if debugg==1: print(x);
+card_group07 = card_group07 + x + '\n'
+if debugg==1: print('* Card 7.2');
+card_group07 = card_group07 + '* Card 7.2' + '\n'
+if debugg==1: print('** CDL   J  Subchannels, enter up to 12');
+card_group07 = card_group07 + '** CDL   J  Subchannels, enter up to 12' + '\n'
+if debugg==1: print('** CDL calculated from NESTOR MVG obtained Re-dependent k correlation.');
+card_group07 = card_group07 + '** CDL calculated from NESTOR MVG obtained Re-dependent k correlation.' + '\n'
+if debugg==1: print('** Assuming Re=500,000');
+card_group07 = card_group07 + '** Assuming Re=500,000' + '\n'
+
 
 grids=['* Grid 1', '* Grid 2', '* Grid 3', '* Grid 4', '* Grid 5', '* Grid 6', '* Grid 7', '* Grid 8', '* Grid 9', '* Grid 10', '* Grid 11']
 cdli=['1.6100', '0.6200', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '0.8600', '2.6290']
 cdlj=['1',      '2',      '4',      '8',      '13',     '17',     '22',     '26',     '30',     '34',     '35']
 
 for idx,gr in enumerate(grids):
-    print(gr)
+    if debugg == 1: print(gr);
+    card_group07 = card_group07 + gr + '\n'
     x = cdli[idx] + '  ' + cdlj[idx]
     sum=1
     y=''
@@ -716,27 +793,36 @@ for idx,gr in enumerate(grids):
                 y = y + '  {:4n}'.format(0)
                 sum += 1
         if sum==12:
-            print(x+y)
+            if debugg == 1: print(x+y);
+            card_group07 = card_group07 + x+y + '\n'
             y=''
             sum=1
         else:
             sum +=1
 
+fileupdate = fileupdate.replace('CARD_GROUP_07',card_group07)
 # -----------------------------------------------------------------------------------------------------------
 # print out card 8
 print('*******************************************************************************')
 print('* CARD GROUP 8 - Rod and Unheated Conductor Data                              *')
 print('*******************************************************************************')
 
-print('* Card 8.1')
-print('*  NRRD    NSRD   NC NRTB NRAD NLTY NSTA  NXF NCAN RADF   W3 NM12 NM13 NM14')
+if debugg == 1: print('* Card 8.1');
+card_group08 = card_group08 + '* Card 8.1' + '\n'
+if debugg == 1: print('*  NRRD    NSRD   NC NRTB NRAD NLTY NSTA  NXF NCAN RADF   W3 NM12 NM13 NM14');
+card_group08 = card_group08 + '*  NRRD    NSRD   NC NRTB NRAD NLTY NSTA  NXF NCAN RADF   W3 NM12 NM13 NM14' + '\n'
 x = '  {:7n}'.format(N_total)
 x = x + '     0    1    1    0    0    1    1    0    0    0    0    0    0'
-print(x)
-print('* Card 8.2')
-print('*    N    IFTY     IAXP NRND      DAXMIN   RMULT    HGAP ISECR   HTAMB    TAMB')
-print('* Card 8.3')
-print('* NSCH  PIE  NSCH  PIE  NSCH  PIE  NSCH  PIE  NSCH   PIE  NSCH   PIE  NSCH   PIE  NSCH   PIE')
+if debugg == 1: print(x);
+card_group08 = card_group08 + x + '\n'
+if debugg == 1: print('* Card 8.2');
+card_group08 = card_group08 + '* Card 8.2' + '\n'
+if debugg == 1: print('*    N    IFTY     IAXP NRND      DAXMIN   RMULT    HGAP ISECR   HTAMB    TAMB');
+card_group08 = card_group08 + '*    N    IFTY     IAXP NRND      DAXMIN   RMULT    HGAP ISECR   HTAMB    TAMB' + '\n'
+if debugg == 1: print('* Card 8.3');
+card_group08 = card_group08 + '* Card 8.3' + '\n'
+if debugg == 1: print('* NSCH  PIE  NSCH  PIE  NSCH  PIE  NSCH  PIE  NSCH   PIE  NSCH   PIE  NSCH   PIE  NSCH   PIE');
+card_group08 = card_group08 + '* NSCH  PIE  NSCH  PIE  NSCH  PIE  NSCH  PIE  NSCH   PIE  NSCH   PIE  NSCH   PIE  NSCH   PIE' + '\n'
 #
 # we assume two geometry type here: one for standard fuel rod (1), the other for guide tube (2)
 #
@@ -754,7 +840,8 @@ for j in range(rY):
         # add power profile id
         x = x + '  {:7n}'.format(rodNum)
         x = x + '  0       0.00000   1.000   5678.3     1   0.000   0.000'
-        print(x)
+        if debugg == 1: print(x);
+        card_group08 = card_group08 + x + '\n'
         # find all subchannels connected to this rod
         unil=[]
         for ch in S_list:
@@ -767,19 +854,26 @@ for j in range(rY):
             x = x + '  {:7n}'.format(unil[k])+ ' 0.25 '
         for k in range(8 - len(unil)):
             x = x + '  {:2n}'.format(0) + ' 0.00 '
-        print(x)
+        if debugg == 1: print(x);
+        card_group08 = card_group08 + x + '\n'
 
 # -----------------------------------------------------------------------------------------------------------
 # print out card 8.6
-print('* Card 8.6')
-print('*   I          NRT1 NST1 NRX1')
+if debugg == 1: print('* Card 8.6');
+card_group08 = card_group08 + '* Card 8.6' + '\n'
+if debugg == 1: print('*   I          NRT1 NST1 NRX1');
+card_group08 = card_group08 + '*   I          NRT1 NST1 NRX1' + '\n'
 x = '    1    '
 x = x + '  {:7n}'.format(N_total)
 x = x + ' 0    2'
-print(x)
+if debugg == 1: print(x);
+card_group08 = card_group08 + x + '\n'
 # all rods use the same initialisation table
-print('* Card 8.7')
-print('*  IRTB')
+if debugg == 1: print('* Card 8.7');
+card_group08 = card_group08 + '* Card 8.7' + '\n'
+if debugg == 1: print('*  IRTB');
+card_group08 = card_group08 + '*  IRTB' + '\n'
+
 x = ''
 sum=1
 rX, rY = rodK.shape
@@ -788,23 +882,29 @@ for j in range(rY):
         rodNum=rodK[j,i]
         x = x + '  {:7n}'.format(rodNum)
         if sum==12:
-            print(x)
+            if debugg == 1: print(x);
+            card_group08 = card_group08 + x + '\n'
             x=''
             sum=1
         else:
             sum = sum + 1
-        if j==rX-1 and i==rX-1 and sum!=12:
-            print(x)
+        if j==rX-1 and i==rX-1 and len(x)>0:
+            if debugg == 1: print(x);
+            card_group08 = card_group08 + x + '\n'
 
 # -----------------------------------------------------------------------------------------------------------
 # print out card 8.9
 # simple temperature table
-print('* Card 8.9')
-print('*     AXIALT      TRINIT')
-print('      0.0000      292.78')
-print('      4.7500      292.78')
+if debugg == 1: print('* Card 8.9');
+card_group08 = card_group08 + '* Card 8.9' + '\n'
+if debugg == 1: print('*     AXIALT      TRINIT');
+card_group08 = card_group08 + '*     AXIALT      TRINIT' + '\n'
+if debugg == 1: print('      0.0000      292.78');
+card_group08 = card_group08 + '      0.0000      292.78' + '\n'
+if debugg == 1: print('      4.7500      292.78');
+card_group08 = card_group08 + '      4.7500      292.78' + '\n'
 
-
+fileupdate = fileupdate.replace('CARD_GROUP_08',card_group08)
 # -----------------------------------------------------------------------------------------------------------
 # print out card 11
 #
@@ -812,21 +912,32 @@ print('*************************************************************************
 print('* CARD GROUP 11 - Axial Power Tables and Forcing Functions                    *')
 print('*******************************************************************************')
 
-print('* Card 11.1')
-print('* NQA      NAXP MNXN  NQ  NGPF NQR  NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14')
+if debugg == 1: print('* Card 11.1');
+card_group11 = card_group11 + '* Card 11.1' + '\n'
+if debugg == 1: print('* NQA      NAXP MNXN  NQ  NGPF NQR  NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14');
+card_group11 = card_group11 + '* NQA      NAXP MNXN  NQ  NGPF NQR  NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14' + '\n'
 x = '    1 '
 x = x + '  {:7n}'.format(N_total)
 x = x + ' 36    0    0    1    0    0    0    0    0    0    0    0'
-print(x)
-print('*')
-print('* Axial Power Forcing Functions')
+if debugg == 1: print(x);
+card_group11 = card_group11 + x + '\n'
+if debugg == 1: print('*');
+card_group11 = card_group11 + '*' + '\n'
+if debugg == 1: print('* Axial Power Forcing Functions');
+card_group11 = card_group11 + '* Axial Power Forcing Functions' + '\n'
 
-print('* Card 11.2 + 11.3 *****************')
-print('*     YQA')
-print('      0.0')
-print('*  I NAXN')
+if debugg == 1: print('* Card 11.2 + 11.3 *****************');
+card_group11 = card_group11 + '* Card 11.2 + 11.3 *****************' + '\n'
+if debugg == 1: print('*     YQA');
+card_group11 = card_group11 + '*     YQA' + '\n'
+if debugg == 1: print('      0.0');
+card_group11 = card_group11 + '      0.0' + '\n'
+if debugg == 1: print('*  I NAXN');
+card_group11 = card_group11 + '*  I NAXN' + '\n'
+# -----------------------------------------------------------------------------------------------------------
+# print out card 11 axial profile
 #
-# for the time being we use a flat power profile for all rods
+# for the time being we use a flat axial power profile for all rods
 #
 power=[0.0   ,  0.0  , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 1.0   , 0.0   , 0.0    ]
 pnode=[0.0000, 0.4872, 0.5481, 0.6699, 0.7917, 0.9135, 1.0353, 1.1571, 1.2788, 1.4006, 1.5224, 1.6442, 1.7660, 1.8878, 2.0096, 2.1314, 2.2532, 2.3750, 2.4968, 2.6186, 2.7404, 2.8622, 2.9840, 3.1058, 3.2276, 3.3494, 3.4712, 3.5929, 3.7147, 3.8365, 3.9583, 4.0801, 4.2019, 4.3237, 4.3846, 4.7540 ]
@@ -836,16 +947,119 @@ for j in range(rY):
     for i in range(rX):
         rodNum=rodK[j,i]
         x = '* Card 11.3 : rod {:7n}'.format(rodNum)
-        print(x)
+        if debugg == 1: print(x);
+        card_group11 = card_group11 + x + '\n'
         x = '*  I NAXN'
-        print(x)
+        if debugg == 1: print(x);
+        card_group11 = card_group11 + x + '\n'
         x = '    {:7n} 36'.format(rodNum)
-        print(x)
+        if debugg == 1: print(x);
+        card_group11 = card_group11 + x + '\n'
         x = '* Card 11.4 : rod {:7n}'.format(rodNum)
-        print(x)
+        if debugg == 1: print(x);
+        card_group11 = card_group11 + x + '\n'
         x = '*   Y     AXIAL'
-        print(x)
+        if debugg == 1: print(x);
+        card_group11 = card_group11 + x + '\n'
         for idx, height in enumerate(pnode):
             x = '  {:5.4f}'.format(height)
             x = x + '  {:5.4f}'.format(power[idx])
-            print(x)
+            if debugg == 1: print(x);
+            card_group11 = card_group11 + x + '\n'
+
+# -----------------------------------------------------------------------------------------------------------
+# print out card 11 radial power fractions
+#
+# for the time being we use a flat radial power profile for all rods
+# we set this profile equal to the matrix "rodH"
+#
+if debugg == 1: print('* Radial Power Forcing Functions');
+card_group11 = card_group11 + '* Radial Power Forcing Functions' + '\n'
+if debugg == 1: print('* Card 11.7');
+card_group11 = card_group11 + '* Card 11.7' + '\n'
+if debugg == 1: print('*        YQR');
+card_group11 = card_group11 + '*        YQR' + '\n'
+if debugg == 1: print('         0.0');
+card_group11 = card_group11 + '         0.0' + '\n'
+if debugg == 1: print('* Card 11.8');
+card_group11 = card_group11 + '* Card 11.8' + '\n'
+if debugg == 1: print('*        FQR');
+card_group11 = card_group11 + '*        FQR' + '\n'
+
+rX, rY = rodK.shape
+x=''
+sum=1
+for j in range(rY):
+    for i in range(rX):
+        rodNum=rodK[j,i]
+        power=rodH[j,i]
+        x = x + '  {:7.5f}'.format(power)
+        if sum == 12:
+            if debugg == 1: print(x);
+            card_group11 = card_group11 + x + '\n'
+            x = ''
+            sum = 1
+        else:
+            sum = sum + 1
+        if j == rX - 1 and i == rX - 1 and len(x)>0:
+            if debugg == 1: print(x);
+            card_group11 = card_group11 + x + '\n'
+
+fileupdate = fileupdate.replace('CARD_GROUP_11',card_group11)
+# -----------------------------------------------------------------------------------------------------------
+# print out card 13 radial power fractions
+#
+print('*******************************************************************************')
+print('* CARD GROUP 13 - Boundary Conditions Data                                    *')
+print('*******************************************************************************')
+
+
+if debugg == 1: print('* Card 13.1');
+card_group13 = card_group13 + '* Card 13.1' + '\n'
+if debugg == 1: print('*   NBND NKBD NFUN NGBD NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14');
+card_group13 = card_group13 + '*   NBND NKBD NFUN NGBD NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14' + '\n'
+x = '  {:7n} '.format(S_total)
+x = x + '0    0    0    0    0    0    0    0    0    0    0    0    0'
+if debugg == 1: print(x);
+card_group13 = card_group13 + x + '\n'
+if debugg == 1: print('* Card 13.4');
+card_group13 = card_group13 + '* Card 13.4' + '\n'
+if debugg == 1: print('* Inlet b.c. -----------------------------------------------------------');
+card_group13 = card_group13 + '* Inlet b.c. -----------------------------------------------------------' + '\n'
+if debugg == 1: print('* note: mass flow rate set to 0 here since gtot was specified up top.');
+card_group13 = card_group13 + '* note: mass flow rate set to 0 here since gtot was specified up top.' + '\n'
+if debugg == 1: print('*  IBD1 IBD2 ISPC N1FN N2FN N3FN   BCVALUE1     BCVALUE2   BCVALUE3  INITGAS');
+card_group13 = card_group13 + '*  IBD1 IBD2 ISPC N1FN N2FN N3FN   BCVALUE1     BCVALUE2   BCVALUE3  INITGAS' + '\n'
+
+flowrate=0.0
+chantemp=-293.6
+
+for ch in S_list:
+    myC=ch.getChannelNumber()
+    x = ' {:7n}  1   2   0    0    0  '.format(myC)
+    x = x + '    {:7.5f}     {:7.5f} 0.0       1'.format(flowrate,chantemp)
+    if debugg == 1: print(x);
+    card_group13 = card_group13 + x + '\n'
+
+if debugg == 1: print('* Outlet b.c. ------------------------------------------------------------');
+card_group13 = card_group13 + '* Outlet b.c. ------------------------------------------------------------' + '\n'
+if debugg == 1: print('*  IBD1 IBD2 ISPC N1FN N2FN N3FN   BCVALUE1     BCVALUE2   BCVALUE3  INITGAS');
+card_group13 = card_group13 + '*  IBD1 IBD2 ISPC N1FN N2FN N3FN   BCVALUE1     BCVALUE2   BCVALUE3  INITGAS' + '\n'
+
+flowrate=0.0
+chanpres=158.0
+
+for ch in S_list:
+    myC=ch.getChannelNumber()
+    x = ' {:7n} 37   1   0    0    0  '.format(myC)
+    x = x + '    {:7.5f}     {:7.5f}  {:7.5f}       1'.format(0.0,chantemp, chanpres)
+    if debugg == 1: print(x);
+    card_group13 = card_group13 + x + '\n'
+
+fileupdate = fileupdate.replace('CARD_GROUP_13',card_group13)
+# -----------------------------------------------------------------------------------------------------------
+# write input file
+#
+fl = open(fileout,'w')
+fl.write(fileupdate)
+fl.close()

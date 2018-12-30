@@ -1,11 +1,13 @@
 """
 COBRA-TF full core, subchannel-by-subchannel model
-
+(c) DrSdl 2018
+simple CTF input write routine
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import hdf5
 
 # defines the basic RPI asset class
 class SubChannel:
@@ -165,7 +167,9 @@ class SubChannel:
 # define template file
 filein  = 'KXX_SIM5_1-1-1_template'
 # define destination file
-fileout = 'p.ps'
+fileout = 'KXX_SIM5_1-1-1_281218.inp'
+fileh5  = 'KXX_SIM5_1-1-1_281218.h5'
+
 # define fuel assembly NxN matrix
 N_x=3
 # define number of fuel rods nxn per fuel assembly
@@ -1018,7 +1022,7 @@ if debugg == 1: print('* Card 13.1');
 card_group13 = card_group13 + '* Card 13.1' + '\n'
 if debugg == 1: print('*   NBND NKBD NFUN NGBD NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14');
 card_group13 = card_group13 + '*   NBND NKBD NFUN NGBD NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14' + '\n'
-x = '  {:7n} '.format(S_total)
+x = '  {:7n} '.format(S_total*2)
 x = x + '0    0    0    0    0    0    0    0    0    0    0    0    0'
 if debugg == 1: print(x);
 card_group13 = card_group13 + x + '\n'
@@ -1063,3 +1067,10 @@ fileupdate = fileupdate.replace('CARD_GROUP_13',card_group13)
 fl = open(fileout,'w')
 fl.write(fileupdate)
 fl.close()
+
+with h5py.File(fileh5, 'w') as hf:
+    hf.create_dataset("channel_IDs",  data=rodS)
+    hf.create_dataset("rod_IDs",      data=rodK)
+    hf.create_dataset("rod_types",    data=rodH)
+    hf.create_dataset("rod_FA_ID",    data=rodU)
+

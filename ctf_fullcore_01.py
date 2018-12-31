@@ -7,7 +7,7 @@ simple CTF input write routine
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import hdf5
+import h5py
 
 # defines the basic RPI asset class
 class SubChannel:
@@ -167,8 +167,8 @@ class SubChannel:
 # define template file
 filein  = 'KXX_SIM5_1-1-1_template'
 # define destination file
-fileout = 'KXX_SIM5_1-1-1_281218.inp'
-fileh5  = 'KXX_SIM5_1-1-1_281218.h5'
+fileout = 'KXX_SIM5_1-1-1_311218.inp'
+fileh5  = 'KXX_SIM5_1-1-1_311218.h5'
 
 # define fuel assembly NxN matrix
 N_x=3
@@ -754,8 +754,11 @@ sum=1
 for ch in S_list:
     myC=ch.getChannelNumber()
     x = ch.getNumberOfNeighborFuel()
-    if x==1:
-        unif.append(myC)
+    # use the following two lines if you do want different pressure losses
+    # in corner and edge channels (i.e. x==1, only channels within fuel assembly)
+    #if x==1:
+    #    unif.append(myC)
+    unif.append(myC)
 
 ns=len(unif)
 # print('*** ', ns)
@@ -1067,6 +1070,13 @@ fileupdate = fileupdate.replace('CARD_GROUP_13',card_group13)
 fl = open(fileout,'w')
 fl.write(fileupdate)
 fl.close()
+
+# ------------------------------------------------------------------------------------------------------------
+# write data in hdf5 format
+# https://www.h5py.org/
+# http://docs.h5py.org/en/stable/
+# https://stackoverflow.com/questions/20928136/input-and-output-numpy-arrays-to-h5py
+#
 
 with h5py.File(fileh5, 'w') as hf:
     hf.create_dataset("channel_IDs",  data=rodS)

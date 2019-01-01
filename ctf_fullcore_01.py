@@ -30,6 +30,9 @@ class SubChannel:
         self.PositionY=0
         self.SizeX=0
         self.SizeY=0
+        self.InletFlowrate=0.0 # kg/s
+        self.InletTemperat=0.0 # Celsius
+        self.OutletPressur=0.0 # bar
 
     def getId(self):
         return self.name
@@ -118,6 +121,27 @@ class SubChannel:
 
     def getSizeY(self):
         return self.SizeY
+
+    # set and get the channel inlet flow rate  -----------------------------
+    def setInletFlowrate(self, myX):
+        self.InletFlowrate = myX
+
+    def getInletFlowrate(self):
+        return self.InletFlowrate
+
+    # set and get the channel inlet temperature  -----------------------------
+    def setInletTemperatur(self, myX):
+        self.InletTemperatur = myX
+
+    def getInletTemperatur(self):
+        return self.InletTemperatur
+
+    # set and get the channel outlet pressure    -----------------------------
+    def setOutletPressur(self, myX):
+        self.OutletPressur = myX
+
+    def getInletPressur(self):
+        return self.OutletPressur
 
     # print CTF channel data                   -----------------------------
     def printCTFchannel(self):
@@ -216,6 +240,11 @@ core_s=40.0
 core_s=520.0
 # define spacer grid locations botton to top (cm)
 spacer=[ 60.0, 70.0, 80.0, 90.0,100.0,110.0,120.0,130.0,140.0]
+# define mass flow rates
+defaultMassFlux = 0.40   # kg/s
+# define mass flow rates for each fuel assembly name
+massFluxPerFA={10: 0.40, 11: 0.40, 12: 0.40, 13: 0.40, 14: 0.44, 15: 0.40, 16: 0.40, 17: 0.40, 18: 0.40 }
+
 
 # create global matrix of fuel rod type layout
 # stack horizontally
@@ -367,7 +396,6 @@ for i in range(N_x):
     else:
         rodU=np.vstack((rodU,rodx))
     sum += 1
-
 ##############################
 # set neighbour rod list
 ##############################
@@ -470,6 +498,19 @@ print('rod neighbor types: ', s4.getRodTypeNeighbors() ,' rod neighbor IDs: ', s
 # guide-tube channel
 s5=S_list[(N_r*N_x-1)*1+2-1]
 print('rod neighbor types: ', s5.getRodTypeNeighbors() ,' rod neighbor IDs: ', s5.getRodNeighbors() ,' rod neighbor FA name: ', s5.getFANumberNeighbors() ,' subchannel neighbor IDs: ', s5.getChannelNeighbors(), ' number of fuel rod types: ', s5.getNumberOfRodTypes(), ' number of FA names: ', s5.getNumberOfNeighborFuel())
+
+# -----------------------------------------------------------------------------------------------------------
+
+##################################################
+# fill channels with inlet mass flow distribution
+##################################################
+for ch in S_list:
+    MyL = ch.getFANumberNeighbors()
+    myC = ch.getChannelNumber()
+    ch.setInletFlowrate(defaultMassFlux)
+    n1=len(set(MyL))
+    if n1==1:  # only channel within a fuel assembly
+        ch.setInletFlowrate(massFluxPerFA[MyL[0]])
 
 # -----------------------------------------------------------------------------------------------------------
 card_group02 = ''
@@ -1044,7 +1085,7 @@ chantemp=-293.6
 for ch in S_list:
     myC=ch.getChannelNumber()
     x = ' {:7n}  1   2   0    0    0  '.format(myC)
-    x = x + '    {:7.5f}     {:7.5f} 0.0       1'.format(flowrate,chantemp)
+    x = x + '    {:7.5f}     {:7.5f} 0.0       1'.format(ch.getInletFlowrate(),chantemp)
     if debugg == 1: print(x);
     card_group13 = card_group13 + x + '\n'
 

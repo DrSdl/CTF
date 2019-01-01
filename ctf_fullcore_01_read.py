@@ -14,8 +14,11 @@ import h5py
 # for a full core with ~44000 channels this is really a big data task,
 # but for our 3x3 FA toy problem, we do not need the help of Spark or HDF
 
-fileout = 'KXX_SIM5_1-1-1_281218.ctf.{:s}'
-fileh5  = 'KXX_SIM5_1-1-1_281218.h5'
+#fileout = 'KXX_SIM5_1-1-1_281218.ctf.{:s}'
+#fileh5  = 'KXX_SIM5_1-1-1_281218.h5'
+
+fileout = 'KXX_SIM5_1-1-1_311218.ctf.{:s}'
+fileh5  = 'KXX_SIM5_1-1-1_311218.h5'
 
 fileout_chan=fileout.format('chans.out')
 fileout_gaps=fileout.format('gaps.out')

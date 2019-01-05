@@ -140,7 +140,7 @@ class SubChannel:
     def setOutletPressur(self, myX):
         self.OutletPressur = myX
 
-    def getInletPressur(self):
+    def getOutletPressur(self):
         return self.OutletPressur
 
     # print CTF channel data                   -----------------------------
@@ -191,8 +191,8 @@ class SubChannel:
 # define template file
 filein  = 'KXX_SIM5_1-1-1_template'
 # define destination file
-fileout = 'KXX_SIM5_1-1-1_311218.inp'
-fileh5  = 'KXX_SIM5_1-1-1_311218.h5'
+fileout = 'KXX_SIM5_1-1-1_040119.inp'
+fileh5  = 'KXX_SIM5_1-1-1_040119.h5'
 
 # define fuel assembly NxN matrix
 N_x=3
@@ -231,6 +231,7 @@ rodN=np.array([ [1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1],
 # rodU: total fuel assembly ID matrix per rod
 # rodS: total subchannel number layout
 # rodK: total fuel rod number layout
+# rodP: total fuel rod power layout
 
 # define active height of core (cm)
 core_h=390.0
@@ -242,9 +243,12 @@ core_s=520.0
 spacer=[ 60.0, 70.0, 80.0, 90.0,100.0,110.0,120.0,130.0,140.0]
 # define mass flow rates
 defaultMassFlux = 0.40   # kg/s
+defaultExitPres = 158.0  # bar
 # define mass flow rates for each fuel assembly name
-massFluxPerFA={10: 0.40, 11: 0.40, 12: 0.40, 13: 0.40, 14: 0.44, 15: 0.40, 16: 0.40, 17: 0.40, 18: 0.40 }
-
+massFluxPerFA={10: 0.40,  11: 0.40,  12: 0.40,  13: 0.40,  14: 0.48,   15: 0.40,  16: 0.40,  17: 0.40,  18: 0.40 }
+exitPresPerFA={10: 158.0, 11: 158.0, 12: 158.0, 13: 158.0, 14: 158.00, 15: 158.0, 16: 158.0, 17: 158.0, 18: 158.0 }
+# radial power factor per fuel assembly
+PowerRadPerFA={10:  0.80, 11:  0.80, 12:  0.80, 13:  0.80, 14:  1.00,  15:  0.80, 16:  0.80, 17:  0.80, 18:  0.80 }
 
 # create global matrix of fuel rod type layout
 # stack horizontally
@@ -508,9 +512,11 @@ for ch in S_list:
     MyL = ch.getFANumberNeighbors()
     myC = ch.getChannelNumber()
     ch.setInletFlowrate(defaultMassFlux)
+    ch.setOutletPressur(defaultExitPres)
     n1=len(set(MyL))
     if n1==1:  # only channel within a fuel assembly
         ch.setInletFlowrate(massFluxPerFA[MyL[0]])
+        ch.setOutletPressur(exitPresPerFA[MyL[0]])
 
 # -----------------------------------------------------------------------------------------------------------
 card_group02 = ''
@@ -826,6 +832,7 @@ card_group07 = card_group07 + '** Assuming Re=500,000' + '\n'
 
 grids=['* Grid 1', '* Grid 2', '* Grid 3', '* Grid 4', '* Grid 5', '* Grid 6', '* Grid 7', '* Grid 8', '* Grid 9', '* Grid 10', '* Grid 11']
 cdli=['1.6100', '0.6200', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '0.8600', '2.6290']
+#cdli=['1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800', '1.0800']
 cdlj=['1',      '2',      '4',      '8',      '13',     '17',     '22',     '26',     '30',     '34',     '35']
 
 for idx,gr in enumerate(grids):
@@ -1040,7 +1047,9 @@ sum=1
 for j in range(rY):
     for i in range(rX):
         rodNum=rodK[j,i]
-        power=rodH[j,i]
+        #power=rodH[j,i]
+        # get power from radial power fraction dict
+        power=PowerRadPerFA[int(rodU[j,i])]
         x = x + '  {:7.5f}'.format(power)
         if sum == 12:
             if debugg == 1: print(x);
@@ -1100,7 +1109,7 @@ chanpres=158.0
 for ch in S_list:
     myC=ch.getChannelNumber()
     x = ' {:7n} 37   1   0    0    0  '.format(myC)
-    x = x + '    {:7.5f}     {:7.5f}  {:7.5f}       1'.format(0.0,chantemp, chanpres)
+    x = x + '    {:7.5f}     {:7.5f}  {:7.5f}       1'.format(0.0,chantemp, ch.getOutletPressur())
     if debugg == 1: print(x);
     card_group13 = card_group13 + x + '\n'
 

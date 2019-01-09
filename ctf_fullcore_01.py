@@ -191,8 +191,8 @@ class SubChannel:
 # define template file
 filein  = 'KXX_SIM5_1-1-1_template'
 # define destination file
-fileout = 'KXX_SIM5_1-1-1_040119.inp'
-fileh5  = 'KXX_SIM5_1-1-1_040119.h5'
+fileout = 'KXX_SIM5_1-1-1_080119.inp'
+fileh5  = 'KXX_SIM5_1-1-1_080119.h5'
 
 # define fuel assembly NxN matrix
 N_x=3
@@ -1070,13 +1070,18 @@ print('*************************************************************************
 print('* CARD GROUP 13 - Boundary Conditions Data                                    *')
 print('*******************************************************************************')
 
+NKBND=Gap_total*11  # number of gaps x 11 axial nodes
+NGBND=NKBND   # they are equal because only 1 node per entry is affected
 
 if debugg == 1: print('* Card 13.1');
 card_group13 = card_group13 + '* Card 13.1' + '\n'
-if debugg == 1: print('*   NBND NKBD NFUN NGBD NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14');
-card_group13 = card_group13 + '*   NBND NKBD NFUN NGBD NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14' + '\n'
+if debugg == 1: print('*   NBND      NKBD NFUN   NGBD NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14');
+card_group13 = card_group13 + '*   NBND      NKBD NFUN   NGBD NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14' + '\n'
 x = '  {:7n} '.format(S_total*2)
-x = x + '0    0    0    0    0    0    0    0    0    0    0    0    0'
+x = x + ' {:7n} '.format(NKBND)
+x = x + ' {:1n} '.format(0)
+x = x + ' {:7n} '.format(NGBND)
+x = x + '0    0    0    0    0    0    0    0    0    0'
 if debugg == 1: print(x);
 card_group13 = card_group13 + x + '\n'
 if debugg == 1: print('* Card 13.4');
@@ -1112,6 +1117,16 @@ for ch in S_list:
     x = x + '    {:7.5f}     {:7.5f}  {:7.5f}       1'.format(0.0,chantemp, ch.getOutletPressur())
     if debugg == 1: print(x);
     card_group13 = card_group13 + x + '\n'
+
+# --- card 13.10 add cross flow blockage for spacer grids and bottom and top nozzle
+x = '*        GAP     JSTART       JEND'
+card_group13 = card_group13 + x + '\n'
+for gaps in range(Gap_total):
+    for k in range(len(cdlj)):
+        x = '    {:7n}     {:7n}    {:7n}'.format(gaps+1, int(cdlj[k]), int(cdlj[k]))
+        if debugg == 1: print(x);
+        card_group13 = card_group13 + x + '\n'
+
 
 fileupdate = fileupdate.replace('CARD_GROUP_13',card_group13)
 # -----------------------------------------------------------------------------------------------------------

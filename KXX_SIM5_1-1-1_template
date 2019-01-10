@@ -31,6 +31,8 @@
    1    2    0    1    3      877.5    1    1    0    0    0    0    0    0
 * Card 1.2
 *     GTOT         AFLUX         DHFRAC
+* *** Attention: ***
+* set 877.5 to 0 if boundary condition at flow inlet should be taken into account
       877.5      27.5765         0.03
 * Card 1.3
 *     PREF             HIN      HGIN    VFRAC1    VFRAC2

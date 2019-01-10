@@ -1,7 +1,7 @@
 """
 COBRA-TF full core, subchannel-by-subchannel model
 (c) DrSdl 2018
-simple CTF output read routines
+simple CTF output read routines for steady state
 """
 
 import numpy as np
@@ -17,8 +17,11 @@ import h5py
 #fileout = 'KXX_SIM5_1-1-1_281218.ctf.{:s}'
 #fileh5  = 'KXX_SIM5_1-1-1_281218.h5'
 
-fileout = 'KXX_SIM5_1-1-1_311218.ctf.{:s}'
-fileh5  = 'KXX_SIM5_1-1-1_311218.h5'
+#fileout = 'KXX_SIM5_1-1-1_311218.ctf.{:s}'
+#fileh5  = 'KXX_SIM5_1-1-1_311218.h5'
+
+fileout = 'KXX_SIM5_1-1-1_080119.ctf.{:s}'
+fileh5  = 'KXX_SIM5_1-1-1_080119.h5'
 
 fileout_chan=fileout.format('chans.out')
 fileout_gaps=fileout.format('gaps.out')
@@ -42,6 +45,7 @@ rangN=36
 check=0
 sum=0
 ars=[]
+print("read channel information ...")
 # ------------------------------------------------------------------------------------------------------------
 # read channel mass flux and pressure
 with open(fileout_chan) as f:
@@ -119,6 +123,9 @@ with open(fileout_chan) as f:
 # ------------------------------------------------------------------------------------------------------------
 # read channel temperatures
 NrGaps=0
+sum=0
+check=0
+print("read gaps information ...")
 with open(fileout_gaps) as f:
     for line in f:
         ## read in channel temperatures ----------------------------------------------
@@ -147,7 +154,9 @@ with open(fileout_gaps) as f:
             df_cros[NrGaps, 2 + level] = cross
             sum += 1
             if level == 2:
-                df_cros[NrGaps, 2 + 1] = df_cros[NrGaps, 2 + 1 + 1]
+                #df_cros[NrGaps, 2 + 1] = df_cros[NrGaps, 2 + 1 + 1]
+                # 0 cross flow at inlet
+                df_cros[NrGaps, 2 + 1] = 0
                 check =0
                 sum=0
                 NrGaps += 1

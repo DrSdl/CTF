@@ -1,7 +1,7 @@
 """
 COBRA-TF full core, subchannel-by-subchannel model
 (c) DrSdl 2018
-simple CTF input write routine
+simple CTF input write routine for steady state cases
 """
 
 import numpy as np
@@ -1070,7 +1070,10 @@ print('*************************************************************************
 print('* CARD GROUP 13 - Boundary Conditions Data                                    *')
 print('*******************************************************************************')
 
-NKBND=Gap_total*11  # number of gaps x 11 axial nodes
+# nodes with ni cross flow; should not directly 'touch' each other - CTF will crash
+cdlz=['3',      '5',      '8',      '13',     '17',     '22',     '26',     '30',     '33',     '35']
+
+NKBND=Gap_total*len(cdlz)  # number of gaps x 11 axial nodes
 NGBND=NKBND   # they are equal because only 1 node per entry is affected
 
 if debugg == 1: print('* Card 13.1');
@@ -1122,8 +1125,8 @@ for ch in S_list:
 x = '*        GAP     JSTART       JEND'
 card_group13 = card_group13 + x + '\n'
 for gaps in range(Gap_total):
-    for k in range(len(cdlj)):
-        x = '    {:7n}     {:7n}    {:7n}'.format(gaps+1, int(cdlj[k]), int(cdlj[k]))
+    for k in range(len(cdlz)):
+        x = '    {:7n}     {:7n}    {:7n}'.format(gaps+1, int(cdlz[k]), int(cdlz[k]))
         if debugg == 1: print(x);
         card_group13 = card_group13 + x + '\n'
 

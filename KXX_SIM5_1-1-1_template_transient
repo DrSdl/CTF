@@ -1,0 +1,173 @@
+*******************************************************************************
+* CTF INPUT DECK template for EKMAN                                           *
+* PWR FUEL ASSEMBLY -  16x16-20                                               *
+* 1-1-1 quadratic fuel assembly sub-channel layout                        *
+* 2209 subchannels, 4324 rods                                                  *
+* Input deck is written in SI Units                                           *
+* Output decks will be generated in SI Units                                  *
+*******************************************************************************
+* CARD INPUT 1
+*       ICOBRA
+             1
+* CARD INPUT 2
+*      INITIAL         DUMPF
+             1             0
+* CARD INPUT 3
+*         EPSO        OITMAX        IITMAX
+         0.001             5            40
+* CARD COBRA 1
+*---------- TEXT ------------>
+  --- KXX_SIM5_6VLT_BEYYYY - YYYY_FR_X0_Y0
+*
+*******************************************************************************
+* CARD GROUP 1 - Calculation Variables and Initial Conditions                 *
+*******************************************************************************
+* CARD GROUP  1
+    1
+* Card 1.1
+* assuming mass flow of 97.5kg/s per fuel assembly
+*
+* NOTRNS = 0: use card 15 for transient information, for steady-state use 1
+* NGAS IRFC EDMD IMIX ISOL    GINIT   NOTRN MESH NDM9 NM10 NM11 NM12 NM13 NM14
+   1    2    0    1    3      877.5    0    1    0    0    0    0    0    0
+* Card 1.2
+*     GTOT         AFLUX         DHFRAC
+* *** Attention: ***
+* set 877.5 to 0 if boundary condition at flow inlet should be taken into account
+          0      27.5765         0.03
+* Card 1.3
+*     PREF             HIN      HGIN    VFRAC1    VFRAC2
+    158.00          -293.9    705.00       1.0    0.9999
+* Card 1.4
+*GTYPE         VFRAC
+air           0.0001
+*
+*******************************************************************************
+* CARD GROUP 2 - Channel Description                                          *
+*******************************************************************************
+* CARD GROUP  2
+    2
+*
+CARD_GROUP_02*
+*******************************************************************************
+* CARD GROUP 3 - Transverse Channel Connection (Gap) Data                     *
+*******************************************************************************
+* CARD GROUP  3
+    3
+*
+CARD_GROUP_03*
+* Card 3.4
+* NMGP
+     0
+*
+*******************************************************************************
+* CARD GROUP 4 - Vertical Channel Connection Data                             *
+*******************************************************************************
+* CARD GROUP  4
+    4
+* Card 4.1
+* NSEC NSIM IREB ISOL NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14
+     1    1    1    0    0    0    0    0    0    0    0    0    0    0
+*
+CARD_GROUP_04*
+*******************************************************************************
+* CARD GROUP 7 - Grid Loss Coefficient Data                                   *
+*******************************************************************************
+* CARD GROUP  7
+    7
+*
+CARD_GROUP_07*
+*******************************************************************************
+* CARD GROUP 8 - Rod and Unheated Conductor Data                              *
+*******************************************************************************
+* CARD GROUP  8
+    8
+*
+CARD_GROUP_08*
+*******************************************************************************
+* CARD GROUP 9 - Conductor Geometry Description                               *
+*******************************************************************************
+* CARD GROUP  9
+    9
+* Card 9.1
+* NFLT IRLF ICNF IMWR NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14
+    2    0    0    0    0    0    0    0    0    0    0    0    0    0
+* Card 9.2
+* 16x16 standard fuel rod
+*   I FTYP    DROD        DFUL     NFUL IMTF IMTC IMOX DCRE    TCLD      FTDS IGPC IGFC IRDP
+    1 nucl  1.075E-2   0.911E-2    12    0    0    0  0.0    7.25E-4 0.950    0    0    0
+* 16x16 standard guide tube mimicking
+*   I FTYP    DROD        DFUL     NFUL IMTF IMTC IMOX DCRE    TCLD      FTDS IGPC IGFC IRDP
+    2 nucl  1.383E-2   0.100E-2    1     0    1    0  0.0    7.15E-4 0.950    0    0    0
+* Card 9.6
+* 16x16 standard guide tube
+*   I FTYP    DROD        DFUL       NFUL IMTF IMTC 
+*    2   tube    1.383E-2   1.240E-2  1    0    0     0    0    0        0     0    0    0
+* NODER  MATR       TREG   QREG                                                               
+*    2     1      1.43E-3   0.0
+***********************************************************************************************
+*GROUP 10 - Material Properties Tables                                                        *
+***********************************************************************************************
+**NGR                                                                                          
+10
+*Card 10.1                                                                                     
+** NMAT NDM2 NDM3 NDM4 NDM5 NDM6 NDM7 NDM8 NDM9 NM10 NM11 NM12 NM13 NM14                       
+      1    0    0    0    0    0    0    0    0    0    0    0    0    0
+*Card 10.2                                                                                     
+**N  NNTDP    RCOLD         IMATAN                                                             
+  1      6    6501       PCAm-M
+*Card 10.3                                                                                     
+**   TPROP      CPF1      THCF                                                                 
+        20     0.286    13.380
+       100     0.294    13.814
+       300     0.314    15.406
+       400     0.324    16.471
+       500     0.335    17.716
+       600     0.345    19.140
+*******************************************************************************
+* CARD GROUP 11 - Axial Power Tables and Forcing Functions                    *
+*******************************************************************************
+* CARD GROUP 11
+   11
+*
+CARD_GROUP_11*
+*******************************************************************************
+* CARD GROUP 12 - Turbulent Mixing and Void Drift Data                        *
+*******************************************************************************
+* CARD GROUP 12
+   12
+*Card 12.2
+** AAAK     BETA       
+** AAAK     BETA 
+ 0.00000 .028867558
+*******************************************************************************
+* CARD GROUP 13 - Boundary Conditions Data                                    *
+*******************************************************************************
+* CARD GROUP 13
+   13
+CARD_GROUP_13*
+*******************************************************************************
+* CARD GROUP 14 - Output Options                                              *
+*******************************************************************************
+* CARD GROUP 14
+   14
+* Card 14.4
+* N1 NOU1 NOU2 NOU3 NOU4 IPRP IOPT itty dnb  imass iheat ichan igap kry
+  5  0    0    0    0    0    0    0    0    0     0     0     0    0
+*
+*******************************************************************************
+* CARD GROUP 15 - TIME DOMAIN DATA                                            *
+*******************************************************************************
+* CARD GROUP 15
+   15
+* Card 15.1
+* *** Attention: ***
+* set TEND to end time of transient
+* set EDINT to edit print time step
+**    DTMIN  DTMAX   TEND  EDINT   DMPINT   RTWFP    MAXITS
+    1.0E-6   1E-1    36.0  0.15     0.0       1.0
+* Card 15.2
+*    DTMIN (if negative stop)
+       -1.     0.    0.     0.      0.     0.
+*
+

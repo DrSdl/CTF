@@ -1100,9 +1100,9 @@ card_group13 = card_group13 + '* Card 13.2' + '\n'
 # ----------------------------------------------------------------------------------------------------------------------
 # we define the2 forcing function in this case as per fuel assembly name, hence
 # we have a dictionary of names and forcing fuctions
-Nperiods=1    # Length in periods
+Nperiods=6    # Length in periods
 Amplitud=0.1  # Amplitide
-Omega=1.0     # Frequency
+Omega=4.0     # Frequency
 
 
 step=2*Nperiods*np.pi/20
